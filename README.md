@@ -206,9 +206,7 @@ nextflow run main.nf -profile test,conda
 
 ## Credits and licence
 
-Adapted from the long-read 18S rRNA pipeline
-[Aline-Git/18S_metabarcoding_pipeline](https://github.com/Aline-Git/18S_metabarcoding_pipeline)
-and distributed under the same licence, GPL-3.0 (see `LICENSE`).
+Distributed under the same licence, GPL-3.0 (see `LICENSE`).
 
 Please also cite the tools the pipeline uses (versions are recorded in
 `pipeline_info/software_versions.yml`): Nextflow, cutadapt, VSEARCH, SeqKit, medaka, minimap2,
