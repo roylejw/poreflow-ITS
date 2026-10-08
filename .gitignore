@@ -1,0 +1,10 @@
+# Nextflow
+work/
+.nextflow/
+.nextflow.log*
+results*/
+# locally generated test data (built from your own reads; do not commit)
+tests/data/
+# container images
+*.sif
+.DS_Store

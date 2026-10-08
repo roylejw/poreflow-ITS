@@ -1,0 +1,7 @@
+# poreflow-ITS medaka environment (built from envs/medaka.yml)
+#   docker build -f containers/Dockerfile.medaka -t poreflow-its-medaka:0.1.0 .      (run from the repository root)
+FROM mambaorg/micromamba:2.0.5
+COPY --chown=$MAMBA_USER:$MAMBA_USER envs/medaka.yml /tmp/env.yml
+ARG CONDA_OVERRIDE_CUDA=12.4
+RUN micromamba install -y -n base -f /tmp/env.yml && micromamba clean --all --yes
+ENV PATH=/opt/conda/bin:$PATH PYTHONNOUSERSITE=1

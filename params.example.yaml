@@ -1,0 +1,32 @@
+# poreflow-ITS run settings - copy, edit, and run with:
+#   nextflow run main.nf -profile <executor>,<software> -params-file my_params.yaml
+# Any setting left out uses the default from nextflow.config.
+
+# ---- Required -------------------------------------------------------------
+input: samplesheet.csv          # CSV/TSV "sample,reads" (file or folder of fastq), or a folder of reads
+db: /path/to/SINTAX_EUK_ITS_v2.0.fasta   # SINTAX-formatted reference (EUKARYOME, UNITE, ...)
+outdir: results
+
+# ---- Primers and target (defaults: ITS1catta-like F / LSU R, ITS4 end site) --
+primer_fwd: ACCWGCGGARGGATCATTA
+primer_rev: TCCTGAGGGAAACTTCG
+its_end_site: GCATATCAATAAGCGGAGGA   # reverse complement of ITS4
+require_rev_primer: false
+
+# ---- Filtering ----------------------------------------------------------------
+min_amplicon_len: 1000
+max_amplicon_len: 2500
+min_its_len: 300
+max_its_len: 1500
+min_read_q: 10
+
+# ---- Clustering, polishing, merging --------------------------------------------
+cluster_id: 0.97
+min_cluster_size: 5
+medaka_model: r1041_e82_400bps_hac_v5.2.0   # match your basecaller ('medaka tools list_models')
+merge_id: 0.97                              # 1 = keep read-level OTUs unmerged
+
+# ---- Taxonomy ---------------------------------------------------------------------
+sintax_cutoff: 0.8
+tax_query_cov: 0.9
+itsx_taxa: all

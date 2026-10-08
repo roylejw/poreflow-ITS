@@ -1,0 +1,12 @@
+# Consensus polishing (versions used for testing).
+# For GPU use on a machine without a visible GPU at install time, create with
+#   CONDA_OVERRIDE_CUDA=12.4 mamba env create -f envs/medaka.yml
+name: poreflow-its-medaka
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - medaka=2.2.1
+  - minimap2=2.31
+  - samtools=1.24

@@ -1,0 +1,14 @@
+# Software for all steps except consensus polishing (versions used for testing)
+name: poreflow-its-main
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.13
+  - biopython=1.88
+  - numpy=2.5
+  - cutadapt=5.2
+  - vsearch=2.32.0
+  - seqkit=2.14.0
+  - itsx=1.1.3
+  - hmmer=3.4
