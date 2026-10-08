@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1
+
+- Container images are now published to the GitHub Container Registry
+  (`ghcr.io/roylejw/poreflow-its-main`, `-medaka`) by a GitHub Actions workflow on every release,
+  and the `docker`, `singularity` and `apptainer` profiles use them by default. In 0.1.0 these
+  profiles pointed at image names that were never published.
+- `ps` added to the images, so Nextflow can record task resource use.
+- README: new section on the container images.
+
 ## 0.1.0
 
 First version for full-length ITS:

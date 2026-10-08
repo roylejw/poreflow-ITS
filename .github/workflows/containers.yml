@@ -1,0 +1,65 @@
+# Builds the two poreflow-ITS software images and publishes them to the GitHub
+# Container Registry (ghcr.io/<owner>/poreflow-its-main and -medaka).
+# Runs automatically when a release is published, or by hand from the Actions tab
+# (Run workflow -> enter the version, e.g. 0.1.1).
+name: Build containers
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Image version tag, without the leading v (e.g. 0.1.1)"
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [main, medaka]
+    steps:
+      - name: Free disk space (the medaka image includes CUDA PyTorch)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - uses: actions/checkout@v4
+
+      - name: Work out image name and tag
+        id: meta
+        env:
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT" = "release" ]; then v="$RELEASE_TAG"; else v="$INPUT_VERSION"; fi
+          v="${v#v}"
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "tag=ghcr.io/${owner}/poreflow-its-${{ matrix.image }}:${v}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: containers/Dockerfile.${{ matrix.image }}
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tag }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=poreflow-ITS ${{ matrix.image }} software environment
+            org.opencontainers.image.licenses=GPL-3.0-or-later

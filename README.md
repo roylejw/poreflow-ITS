@@ -62,8 +62,8 @@ raw reads (per sample: one fastq(.gz) or a folder of dorado/MinKNOW split files)
 | Executor | | Software | |
 |---|---|---|---|
 | `local` | this machine | `conda` / `mamba` | builds `envs/main.yml` and `envs/medaka.yml` on first use |
-| `slurm` | SLURM | `docker` | images built with `containers/build.sh` |
-| `pbs` | PBS Pro | `singularity` / `apptainer` | same images (`build.sh --sif`, or from a registry) |
+| `slurm` | SLURM | `docker` | images pulled from `ghcr.io/roylejw/poreflow-its-*` |
+| `pbs` | PBS Pro | `singularity` / `apptainer` | the same images, converted automatically on first use |
 | `sge` | SGE / UGE (`smp` PE) | `wave` | containers built on the fly from `envs/*.yml` by Seqera Wave (needs internet) |
 | `lsf` | LSF | | |
 
@@ -72,6 +72,14 @@ its outputs are copied back to the work directory. The work directory itself (`-
 config) must be on storage shared by all compute nodes: launching from node-local disk, such as inside an interactive
 job's local folder, makes jobs on other nodes fail immediately (SLURM exit code 0:53). `--copy_inputs_to_scratch` also copies the inputs
 instead of symlinking them.
+
+### Containers
+
+The two software images (`main` and `medaka`) are built from `envs/*.yml` by `containers/Dockerfile.*` and published
+to the GitHub Container Registry by a GitHub Actions workflow (`.github/workflows/containers.yml`) for every release.
+Docker, Singularity and Apptainer pull them automatically; Singularity/Apptainer convert them to `.sif` images on first
+use (set `NXF_SINGULARITY_CACHEDIR` to a shared folder so this happens once). To build them yourself instead, run
+`bash containers/build.sh` and point `--container_main` / `--container_medaka` at your tags.
 
 ### Site configuration
 
@@ -142,7 +150,7 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `gpu` / `gpu_cluster_options` | false / `''` | GPU polishing and the scheduler flags that request a GPU |
 | `max_cpus` / `max_memory` / `max_time` | 16 / 64.GB / 48.h | caps on any single task |
 | `conda_main` / `conda_medaka` | – | use existing conda environments instead of building them |
-| `container_main` / `container_medaka` | `poreflow-its-*:0.1.0` | container images |
+| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.1.1` | container images |
 
 ### Adapting to other primers
 
