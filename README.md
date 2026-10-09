@@ -76,15 +76,14 @@ instead of symlinking them.
 ### Containers
 
 The two software images (`main` and `medaka`) are built from `envs/*.yml` by `containers/Dockerfile.*` and published
-to the GitHub Container Registry by a GitHub Actions workflow (`.github/workflows/containers.yml`) for every release.
-Docker, Singularity and Apptainer pull them automatically; Singularity/Apptainer convert them to `.sif` images on first
+to the GitHub Container Registry. Docker, Singularity and Apptainer pull them automatically; Singularity/Apptainer convert them to `.sif` images on first
 use (set `NXF_SINGULARITY_CACHEDIR` to a shared folder so this happens once). To build them yourself instead, run
 `bash containers/build.sh` and point `--container_main` / `--container_medaka` at your tags.
 
 ### Site configuration
 
-Cluster-specific settings go in a small config file passed with `-c`. Use `conf/site_example.config` as a
-template: maximum node size, queue/account, GPU request, job submission rate, and a shared conda cache.
+Cluster-specific settings go in a config file passed with `-c`. Use `conf/site_example.config` as a
+template: maximum node size, queue/account, GPU request, job submission rate, shared conda cache, etc.
 
 ```groovy
 params {
@@ -179,8 +178,7 @@ results/
 └── pipeline_info/               software_versions.yml, execution report, timeline, trace
 ```
 
-Suggested downstream filtering: keep OTUs with `ITSx_detected == yes` and `chimera_uchime3 != Y`. Use
-positive controls to check the expected OTU, and negative controls to set an abundance floor.
+Suggested to keep OTUs with `ITSx_detected == yes` and `chimera_uchime3 != Y`.
 
 ## Testing
 
@@ -199,14 +197,14 @@ nextflow run main.nf -profile test,conda
   conserved ITS4 site. This removes ~1 kb of conserved LSU that would otherwise dominate clustering identity.
   ITSx is run on the polished consensus sequences to annotate and validate the ITS.
 - **Quality-ordered clustering.** Reads are sorted by mean quality, so the most accurate reads become
-  centroids (`--usersort`). This follows the 18S long-read pipeline this work is based on.
+  centroids (`--usersort`).
 - **Consensus merging.** At nanopore error rates, reads with more error than 1 − `cluster_id` relative to
   the centroid start new clusters. One template is therefore split into several OTUs whose polished
   consensus sequences differ by a few indels. These are merged at `merge_id`, and their counts summed.
 
 ## Credits and licence
 
-Distributed under the same licence, GPL-3.0 (see `LICENSE`).
+Distributed under GPL-3.0 (see `LICENSE`).
 
 Please also cite the tools the pipeline uses (versions are recorded in
 `pipeline_info/software_versions.yml`): Nextflow, cutadapt, VSEARCH, SeqKit, medaka, minimap2,
