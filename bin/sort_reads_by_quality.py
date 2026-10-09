@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Sort a FASTQ by decreasing mean read quality and drop reads below a threshold.
 
-Mean quality is computed as upstream (Aline-Git/18S_metabarcoding_pipeline):
--10*log10(mean per-base error probability). Unlike upstream, reads are not all
+Mean quality is -10*log10(mean per-base error probability). Reads are not all
 held in memory: qualities are computed in one pass, then the records are written
 in sorted order from a SeqIO index (input must be uncompressed).
 

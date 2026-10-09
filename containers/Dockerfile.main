@@ -1,5 +1,5 @@
 # poreflow-ITS main environment (built from envs/main.yml)
-#   docker build -f containers/Dockerfile.main -t poreflow-its-main:0.1.1 .      (run from the repository root)
+#   docker build -f containers/Dockerfile.main -t poreflow-its-main:0.2.0 .      (run from the repository root)
 FROM mambaorg/micromamba:2.0.5
 # ps is used by Nextflow to record task CPU and memory use
 USER root

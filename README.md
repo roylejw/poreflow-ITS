@@ -12,7 +12,7 @@ raw reads (per sample: one fastq(.gz) or a folder of dorado/MinKNOW split files)
  │                   discard reads with a second full primer (concatemers)
  │                   cut at the ITS4 site (~40 bp into LSU) → full ITS only
  ▼
- │ 2  CLUSTER        pool samples; sort reads by mean quality; drop < Q10
+ │ 2  CLUSTER        pool samples; sort reads by mean quality; drop < Q20
  │                   vsearch --cluster_smallmem --usersort (best reads become centroids)
  │                   OTUs = clusters ≥ 5 reads
  ▼
@@ -69,22 +69,19 @@ raw reads (per sample: one fastq(.gz) or a folder of dorado/MinKNOW split files)
 
 On every cluster profile each task runs in node-local scratch (`$TMPDIR`, `process.scratch = true`) and only
 its outputs are copied back to the work directory. The work directory itself (`-work-dir`, or `workDir` in a site
-config) must be on storage shared by all compute nodes: launching from node-local disk, such as inside an interactive
-job's local folder, makes jobs on other nodes fail immediately (SLURM exit code 0:53). `--copy_inputs_to_scratch` also copies the inputs
-instead of symlinking them.
+config) must be on storage shared by all compute nodes.
 
 ### Containers
 
 The two software images (`main` and `medaka`) are built from `envs/*.yml` by `containers/Dockerfile.*` and published
-to the GitHub Container Registry by a GitHub Actions workflow (`.github/workflows/containers.yml`) for every release.
-Docker, Singularity and Apptainer pull them automatically; Singularity/Apptainer convert them to `.sif` images on first
+to the GitHub Container Registry. Docker, Singularity and Apptainer pull them automatically; Singularity/Apptainer convert them to `.sif` images on first
 use (set `NXF_SINGULARITY_CACHEDIR` to a shared folder so this happens once). To build them yourself instead, run
 `bash containers/build.sh` and point `--container_main` / `--container_medaka` at your tags.
 
 ### Site configuration
 
-Cluster-specific settings go in a small config file passed with `-c`. Use `conf/site_example.config` as a
-template: maximum node size, queue/account, GPU request, job submission rate, and a shared conda cache.
+Cluster-specific settings go in a config file passed with `-c`. Use `conf/site_example.config` as a
+template: maximum node size, queue/account, GPU request, job submission rate, shared conda cache, etc.
 
 ```groovy
 params {
@@ -150,7 +147,7 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `gpu` / `gpu_cluster_options` | false / `''` | GPU polishing and the scheduler flags that request a GPU |
 | `max_cpus` / `max_memory` / `max_time` | 16 / 64.GB / 48.h | caps on any single task |
 | `conda_main` / `conda_medaka` | – | use existing conda environments instead of building them |
-| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.1.1` | container images |
+| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.2.0` | container images |
 
 ### Adapting to other primers
 
@@ -179,8 +176,7 @@ results/
 └── pipeline_info/               software_versions.yml, execution report, timeline, trace
 ```
 
-Suggested downstream filtering: keep OTUs with `ITSx_detected == yes` and `chimera_uchime3 != Y`. Use
-positive controls to check the expected OTU, and negative controls to set an abundance floor.
+Suggested to keep OTUs with `ITSx_detected == yes` and `chimera_uchime3 != Y`.
 
 ## Testing
 
@@ -199,16 +195,19 @@ nextflow run main.nf -profile test,conda
   conserved ITS4 site. This removes ~1 kb of conserved LSU that would otherwise dominate clustering identity.
   ITSx is run on the polished consensus sequences to annotate and validate the ITS.
 - **Quality-ordered clustering.** Reads are sorted by mean quality, so the most accurate reads become
-  centroids (`--usersort`). This follows the 18S long-read pipeline this work is based on.
+  centroids (`--usersort`).
+- **Clustering run time.** All reads are pooled and clustered together, so OTUs are consistent across
+  samples. The run time of this step grows faster than the number of reads (about 1 h for 2 million ITS reads
+  on 14 CPUs), and it uses a single job. For very large runs (tens of millions of reads), give CLUSTER
+  more time and CPUs in your site config, e.g.
+  `process { withName: 'CLUSTER' { cpus = 40; time = 168.h } }` with `max_time` raised to match.
 - **Consensus merging.** At nanopore error rates, reads with more error than 1 − `cluster_id` relative to
   the centroid start new clusters. One template is therefore split into several OTUs whose polished
   consensus sequences differ by a few indels. These are merged at `merge_id`, and their counts summed.
 
 ## Credits and licence
 
-Adapted from the long-read 18S rRNA pipeline
-[Aline-Git/18S_metabarcoding_pipeline](https://github.com/Aline-Git/18S_metabarcoding_pipeline)
-and distributed under the same licence, GPL-3.0 (see `LICENSE`).
+Distributed under GPL-3.0 (see `LICENSE`).
 
 Please also cite the tools the pipeline uses (versions are recorded in
 `pipeline_info/software_versions.yml`): Nextflow, cutadapt, VSEARCH, SeqKit, medaka, minimap2,

@@ -6,8 +6,6 @@
  *   -> quality-ordered clustering -> medaka consensus per OTU
  *   -> merging of near-identical consensus OTUs -> ITSx, chimera check,
  *      top hit + SINTAX taxonomy -> OTU table
- *
- * Adapted from Aline-Git/18S_metabarcoding_pipeline (GPL-3.0).
  */
 
 include { PREPROCESS; PER_READ_SINTAX }                            from './modules/preprocess'

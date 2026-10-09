@@ -2,8 +2,7 @@
 """Turn a vsearch .uc clustering into per-OTU read files for consensus polishing,
 plus an OTU x sample count table.
 
-Adapted from make_cluster_files.py / make_grouped_taxonomic_table_from_usearch_output.py
-(Aline-Git/18S_metabarcoding_pipeline). Read labels must carry ';sample=<name>'.
+Read labels must carry ';sample=<name>'.
 
 For every cluster with >= --min_size reads (numbered OTU_1.. by decreasing size):
   <out>/clusters/OTU_n.fastq            up to --max_reads member reads (centroid

@@ -1,7 +1,7 @@
 # Builds the two poreflow-ITS software images and publishes them to the GitHub
 # Container Registry (ghcr.io/<owner>/poreflow-its-main and -medaka).
 # Runs automatically when a release is published, or by hand from the Actions tab
-# (Run workflow -> enter the version, e.g. 0.1.1).
+# (Run workflow -> enter the version, e.g. 0.2.0).
 name: Build containers
 
 on:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Image version tag, without the leading v (e.g. 0.1.1)"
+        description: "Image version tag, without the leading v (e.g. 0.2.0)"
         required: true
 
 permissions:
