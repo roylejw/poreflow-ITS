@@ -93,8 +93,9 @@ process CHIMERA {
     """
 }
 
+// runs once per chunk of OTUs (see tophit_chunk_size); main.nf joins the outputs
 process TOPHIT {
-    label 'process_high'
+    label 'process_medium'
     conda     params.conda_main ?: "${moduleDir}/../envs/main.yml"
     container params.container_main
 
@@ -139,7 +140,7 @@ process SINTAX {
     script:
     """
     vsearch --sintax ${consensus} --db ${db} --sintax_cutoff ${params.sintax_cutoff} \\
-        --strand plus --threads ${task.cpus} --tabbedout sintax.tsv 2> sintax.log
+        --strand plus --randseed ${params.sintax_seed} --threads ${task.cpus} --tabbedout sintax.tsv 2> sintax.log
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

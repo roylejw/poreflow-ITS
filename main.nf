@@ -36,13 +36,17 @@ workflow {
 
         ITSX(MERGE_OTUS.out.consensus)
         CHIMERA(MERGE_OTUS.out.consensus)
-        TOPHIT(MERGE_OTUS.out.consensus, db)
+        // the best-hit search is the slowest step: split the OTUs into chunks that
+        // run as separate jobs, then join the hits (each OTU is searched on its own)
+        TOPHIT(MERGE_OTUS.out.consensus.splitFasta(by: params.tophit_chunk_size as int, file: true), db)
+        def top_hits = TOPHIT.out.tsv.collectFile(name: 'top_hit.tsv', sort: 'hash',
+                                                  storeDir: "${params.outdir}/04_taxonomy")
         SINTAX(MERGE_OTUS.out.consensus, db)
 
         OTU_TABLE(
             MERGE_OTUS.out.consensus,
             MERGE_OTUS.out.counts,
-            TOPHIT.out.tsv,
+            top_hits,
             SINTAX.out.tsv,
             ITSX.out.positions,
             CHIMERA.out.tsv,
@@ -53,7 +57,7 @@ workflow {
 
         PREPROCESS.out.versions.first()
             .mix(CLUSTER.out.versions, POLISH.out.versions, MERGE_OTUS.out.versions, ITSX.out.versions,
-                 CHIMERA.out.versions, TOPHIT.out.versions, SINTAX.out.versions, OTU_TABLE.out.versions)
+                 CHIMERA.out.versions, TOPHIT.out.versions.first(), SINTAX.out.versions, OTU_TABLE.out.versions)
             .collectFile(name: 'software_versions.yml', storeDir: "${params.outdir}/pipeline_info", sort: true)
     }
 }

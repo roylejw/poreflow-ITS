@@ -21,7 +21,8 @@ raw reads (per sample: one fastq(.gz) or a folder of dorado/MinKNOW split files)
  │ 4  MERGE_OTUS     merge near-identical polished consensus OTUs (vsearch --cluster_size)
  │    ITSX           ITS1 / 5.8S / ITS2 boundaries
  │    CHIMERA        vsearch --uchime3_denovo
- │    TOPHIT         vsearch --usearch_global best hit (≥ 90 % query coverage)
+ │    TOPHIT         vsearch --usearch_global best hit (≥ 90 % query coverage),
+ │                   in parallel chunks of tophit_chunk_size OTUs
  │    SINTAX         vsearch --sintax with bootstrap confidence
  ▼
  OTU_TABLE           OTU × sample counts, taxonomy, QC flags, read tracking
@@ -140,7 +141,9 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `medaka_model` | `r1041_e82_400bps_hac_v5.2.0` | medaka model matching the basecaller (`medaka tools list_models`) |
 | `merge_id` | 0.97 | identity for merging polished consensus OTUs (1 = no merging) |
 | `tax_query_cov` | 0.9 | minimum query coverage of the top hit |
+| `tophit_chunk_size` | 1000 | OTUs per best-hit search job; jobs run in parallel and their hits are joined |
 | `sintax_cutoff` | 0.8 | SINTAX bootstrap cut-off for the OTU table taxonomy |
+| `sintax_seed` | 1 | random seed for SINTAX, so repeated runs give identical confidences |
 | `itsx_taxa` | `all` | ITSx profile set (`-t`), e.g. `F` for fungi only |
 | `per_read_tax` | false | also classify every read with SINTAX |
 | `cluster_options` | `''` | scheduler options added to every job (e.g. account) |

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- The best-hit search (TOPHIT), the slowest step, now runs in parallel chunks of
+  `tophit_chunk_size` OTUs (default 1000) whose hits are joined into one `top_hit.tsv`.
+  The results are unchanged; each chunk job uses the medium resource label (8 CPUs).
+- SINTAX now runs with a fixed random seed (`sintax_seed`, default 1). Before, its bootstrap
+  confidences, and occasionally a species call, differed slightly between runs.
+
 ## 0.2.0
 
 - Includes the unreleased 0.1.1 changes below.

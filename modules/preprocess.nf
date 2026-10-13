@@ -92,7 +92,7 @@ process PER_READ_SINTAX {
     script:
     """
     vsearch --sintax ${reads} --db ${db} --sintax_cutoff ${params.sintax_cutoff} \\
-        --strand plus --threads ${task.cpus} --tabbedout ${sample}_per_read_sintax.tsv
+        --strand plus --randseed ${params.sintax_seed} --threads ${task.cpus} --tabbedout ${sample}_per_read_sintax.tsv
     gzip ${sample}_per_read_sintax.tsv
 
     cat <<-END_VERSIONS > versions.yml
