@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use poreflow-ITS, please cite the article below and the software it uses."
 title: "poreflow-ITS: full-length ITS metabarcoding of Oxford Nanopore amplicon reads"
-version: 0.2.0
+version: 0.3.0
 license: GPL-3.0-or-later
 authors:
   - family-names: Royle

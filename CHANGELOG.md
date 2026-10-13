@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
+
+- Default `min_read_q` raised from 10 to 20: reads with a mean quality below Q20 are removed
+  before clustering. This changes results; set `min_read_q: 10` to reproduce 0.2.0.
 
 - The best-hit search (TOPHIT), the slowest step, now runs in parallel chunks of
   `tophit_chunk_size` OTUs (default 1000) whose hits are joined into one `top_hit.tsv`.

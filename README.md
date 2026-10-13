@@ -134,7 +134,7 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `require_rev_primer` | false | also require the 3′ primer (otherwise trimmed only if present) |
 | `min_amplicon_len` / `max_amplicon_len` | 1000 / 2500 | length window after primer trimming |
 | `min_its_len` / `max_its_len` | 300 / 1500 | length window of the extracted full ITS |
-| `min_read_q` | 10 | minimum mean read quality |
+| `min_read_q` | 20 | minimum mean read quality (from the mean per-base error probability) |
 | `cluster_id` | 0.97 | read clustering identity |
 | `min_cluster_size` | 5 | minimum reads per OTU |
 | `max_reads_per_cluster` | 1000 | highest-quality reads per OTU used for polishing |
@@ -150,7 +150,7 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `gpu` / `gpu_cluster_options` | false / `''` | GPU polishing and the scheduler flags that request a GPU |
 | `max_cpus` / `max_memory` / `max_time` | 16 / 64.GB / 48.h | caps on any single task |
 | `conda_main` / `conda_medaka` | – | use existing conda environments instead of building them |
-| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.2.0` | container images |
+| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.3.0` | container images |
 
 ### Adapting to other primers
 

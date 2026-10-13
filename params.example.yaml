@@ -18,7 +18,7 @@ min_amplicon_len: 1000
 max_amplicon_len: 2500
 min_its_len: 300
 max_its_len: 1500
-min_read_q: 10
+min_read_q: 20
 
 # ---- Clustering, polishing, merging --------------------------------------------
 cluster_id: 0.97
