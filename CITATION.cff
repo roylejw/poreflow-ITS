@@ -1,14 +1,10 @@
-cff-version: 1.2.0
+cff-version: 1.3.0
 message: "If you use poreflow-ITS, please cite the article below and the software it uses."
-title: "poreflow-ITS: full-length ITS metabarcoding of Oxford Nanopore amplicon reads"
+title: "Poreflow-ITS: an end-to-end pipeline for nanopore full-length ITS metabarcoding based on pooled consensus clustering"
 version: 0.3.1
 license: GPL-3.0-or-later
 authors:
   - family-names: Royle
     given-names: Jack
-  - family-names: Huang
-    given-names: Yun
-  - family-names: Asselin
-    given-names: Sean
   - family-names: Bennett
     given-names: Jonathan
