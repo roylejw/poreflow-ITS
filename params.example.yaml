@@ -10,7 +10,7 @@ outdir: results
 # ---- Primers and target (defaults: ITS1catta-like F / LSU R, ITS4 end site) --
 primer_fwd: ACCWGCGGARGGATCATTA
 primer_rev: TCCTGAGGGAAACTTCG
-its_end_site: GCATATCAATAAGCGGAGGA   # reverse complement of ITS4
+its_end_site: GCATATCAATAAGCGGAGGA   # reverse complement of ITS4; 'none' = do not cut (e.g. COI)
 require_rev_primer: false
 
 # ---- Filtering ----------------------------------------------------------------

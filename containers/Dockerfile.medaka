@@ -1,5 +1,5 @@
 # poreflow-ITS medaka environment (built from envs/medaka.yml)
-#   docker build -f containers/Dockerfile.medaka -t poreflow-its-medaka:0.3.0 .      (run from the repository root)
+#   docker build -f containers/Dockerfile.medaka -t poreflow-its-medaka:0.3.1 .      (run from the repository root)
 FROM mambaorg/micromamba:2.0.5
 # ps is used by Nextflow to record task CPU and memory use
 USER root

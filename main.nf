@@ -110,7 +110,9 @@ def validateParams() {
      sintax_cutoff: params.sintax_cutoff, primer_error: params.primer_error].each { k, v ->
         if (!(v as double >= 0 && v as double <= 1)) error("--${k} must be between 0 and 1 (got ${v})")
     }
-    [primer_fwd: params.primer_fwd, primer_rev: params.primer_rev, its_end_site: params.its_end_site].each { k, v ->
+    def seqs = [primer_fwd: params.primer_fwd, primer_rev: params.primer_rev]
+    if ((params.its_end_site as String).toLowerCase() != 'none') seqs.its_end_site = params.its_end_site
+    seqs.each { k, v ->
         if (!(v ==~ /[ACGTUWSMKRYBDHVNacgtuwsmkrybdhvn]+/)) error("--${k} is not a DNA/IUPAC sequence: ${v}")
     }
 }

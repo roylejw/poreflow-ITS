@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1
+
+- New: `its_end_site: none` skips cutting at the ITS4 site, so amplicons without a conserved
+  internal site (e.g. COI) can be processed; reads are only length-filtered by `min/max_its_len`.
+- README: corrected the advice for primer pairs ending before the ITS4 site (the reverse complement
+  of the reverse primer cannot be used as `its_end_site`, as it is trimmed off in the primer step).
+- Fix: the per-chunk TOPHIT outputs were also published to `tophit/top_hit.tsv`
+  (overwriting each other, so that file held only one chunk). Only the joined
+  `04_taxonomy/top_hit.tsv` is published now; results were not affected.
+
 ## 0.3.0
 
 - Default `min_read_q` raised from 10 to 20: reads with a mean quality below Q20 are removed

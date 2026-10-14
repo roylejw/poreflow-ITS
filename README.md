@@ -129,7 +129,7 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `outdir` | `results` | output folder |
 | `primer_fwd` | `ACCWGCGGARGGATCATTA` | forward primer (SSU end) |
 | `primer_rev` | `TCCTGAGGGAAACTTCG` | reverse primer (LSU) |
-| `its_end_site` | `GCATATCAATAAGCGGAGGA` | 3′ cut site defining the end of the ITS (reverse complement of ITS4) |
+| `its_end_site` | `GCATATCAATAAGCGGAGGA` | 3′ cut site defining the end of the ITS (reverse complement of ITS4); `none` keeps reads whole |
 | `primer_error` | 0.15 | maximum primer error rate |
 | `require_rev_primer` | false | also require the 3′ primer (otherwise trimmed only if present) |
 | `min_amplicon_len` / `max_amplicon_len` | 1000 / 2500 | length window after primer trimming |
@@ -150,15 +150,21 @@ All parameters can be set in the params file (`-params-file`) or on the command 
 | `gpu` / `gpu_cluster_options` | false / `''` | GPU polishing and the scheduler flags that request a GPU |
 | `max_cpus` / `max_memory` / `max_time` | 16 / 64.GB / 48.h | caps on any single task |
 | `conda_main` / `conda_medaka` | – | use existing conda environments instead of building them |
-| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.3.0` | container images |
+| `container_main` / `container_medaka` | `ghcr.io/roylejw/poreflow-its-*:0.3.1` | container images |
 
 ### Adapting to other primers
 
 The defaults target an amplicon from the 3′ end of the SSU to the LSU (~1.7–1.9 kb), from which the
-full ITS is cut at the ITS4 site. For another primer pair, set `primer_fwd`, `primer_rev` and
-the length windows. If the reverse primer lies upstream of the ITS4 site (e.g. ITS4 itself), set
-`its_end_site` to a conserved site just inside the amplicon, or to the reverse complement of the
-reverse primer with `min_amplicon_len` lowered accordingly.
+full ITS is cut at the ITS4 site. For another primer pair, set `primer_fwd`, `primer_rev` and the
+length windows (`min/max_amplicon_len` after primer trimming, `min/max_its_len` after the cut).
+
+- If the amplicon extends past the ITS4 site, keep the default `its_end_site`.
+- If the reverse primer lies upstream of the ITS4 site (e.g. ITS4 itself), set `its_end_site` to a
+  conserved site inside the amplicon. Do not use the reverse complement of the reverse primer: it is
+  already trimmed off in the primer step, so no read would contain it and all would be discarded.
+- For amplicons with no conserved internal site, such as COI or other protein-coding markers, set
+  `its_end_site: none`. Reads are then kept whole after primer trimming and only filtered by
+  `min/max_its_len`. ITSx will find no ITS in such OTUs; ignore the `ITSx_detected` column.
 
 ## Output
 

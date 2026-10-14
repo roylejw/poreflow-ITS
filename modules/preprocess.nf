@@ -2,6 +2,8 @@
  * Per sample: primer trimming + orientation, removal of reads with a second
  * full primer (concatemers), extraction of the full ITS by cutting at the
  * conserved ITS4 site, and read renaming as <read_id>;sample=<sample>.
+ * With its_end_site = 'none' (e.g. COI or other amplicons with no conserved
+ * internal site) reads are not cut, only filtered by min/max_its_len.
  */
 process PREPROCESS {
     tag "${sample}"
@@ -25,7 +27,8 @@ process PREPROCESS {
     def rev_mode = (params.require_rev_primer as String) == 'true' ? 'required' : 'optional'
     def ov_fwd   = params.primer_fwd.length() - 4
     def ov_rev   = params.primer_rev.length() - 4
-    def ov_its   = params.its_end_site.length() - 5
+    def cut_its  = (params.its_end_site as String).toLowerCase() != 'none'
+    def ov_its   = cut_its ? params.its_end_site.length() - 5 : 0
     """
     count() { seqkit stats -T "\$1" | awk -F'\\t' 'NR==2{print \$4}'; }
     printf "sample\\tstep\\treads\\n" > ${sample}_read_counts.tsv
@@ -52,11 +55,18 @@ process PREPROCESS {
         > ${sample}_cutadapt_internal.log
     printf "%s\\tno_internal_primers\\t%s\\n" ${sample} \$(count no_internal_primers.fastq.gz) >> ${sample}_read_counts.tsv
 
-    # 3. full ITS: cut at the ITS4 site (~40 bp into the LSU)
-    cutadapt -j ${task.cpus} -e 0.2 \\
-        -a "${params.its_end_site};min_overlap=${ov_its}" \\
-        --discard-untrimmed -m ${params.min_its_len} -M ${params.max_its_len} \\
-        -o its_tmp.fastq.gz no_internal_primers.fastq.gz > ${sample}_cutadapt_its.log
+    # 3. full ITS: cut at the ITS4 site (~40 bp into the LSU); with its_end_site
+    #    'none', reads are kept whole and only filtered by length
+    if [ "${cut_its}" = true ]; then
+        cutadapt -j ${task.cpus} -e 0.2 \\
+            -a "${params.its_end_site};min_overlap=${ov_its}" \\
+            --discard-untrimmed -m ${params.min_its_len} -M ${params.max_its_len} \\
+            -o its_tmp.fastq.gz no_internal_primers.fastq.gz > ${sample}_cutadapt_its.log
+    else
+        seqkit seq -m ${params.min_its_len} -M ${params.max_its_len} \\
+            -o its_tmp.fastq.gz no_internal_primers.fastq.gz
+        echo "its_end_site = none: reads not cut; kept ${params.min_its_len}-${params.max_its_len} bp" > ${sample}_cutadapt_its.log
+    fi
 
     # 4. rename reads with the sample
     seqkit replace -p '\\s.*\$' -r ";sample=${sample}" -o ${sample}_ITS.fastq.gz its_tmp.fastq.gz
